@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.store.mapper.CartVOMapper">
+    <!-- 查询某用户的购物车数据：List<CartVO> findVOByUid(Integer uid) -->
+    <select id="findVOByUid" resultType="com.cy.store.vo.CartVo">
+        select
+            cid,
+            uid,
+            pid,
+            t_cart.price,
+            t_cart.num,
+            title,
+            t_product.price as realPrice,
+            image
+        from t_cart
+                 left join t_product on t_cart.pid = t_product.id
+        where
+            uid = #{uid}
+        order by
+            t_cart.created_time desc
+    </select>
+
+<!--显示勾选的购物车数据    List<CartVo> findVOByCid(Integer[] cids);-->
+    <select id="findVOByCid" resultType="com.cy.store.vo.CartVo">
+        select
+            cid,
+            uid,
+            pid,
+            t_cart.price,
+            t_cart.num,
+            title,
+            t_product.price as realPrice,
+            image
+        from t_cart
+                 left join t_product on t_cart.pid = t_product.id
+        where
+            cid in (<foreach collection="array" item="cid" separator=",">
+                    #{cid}
+                    </foreach> )
+        order by
+            t_cart.created_time desc
+    </select>
+</mapper>

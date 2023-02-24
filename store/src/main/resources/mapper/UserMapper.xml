@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.store.mapper.UserMapper">
+<!--    自定义映射规则,完成字段与属性名不一样的映射-->
+    <resultMap id="ResultMapUser" type="com.cy.store.entity.User">
+        <!--在定义映射规则时主键是不可以省略的-->
+        <id column="uid" property="uid"></id>
+        <result column="is_delete" property="isDelete"></result>
+        <result column="created_user" property="createdUser"></result>
+        <result column="created_time" property="createdTime"></result>
+        <result column="modified_user" property="modifiedUser"></result>
+        <result column="modified_time" property="modifiedTime"></result>
+    </resultMap>
+
+
+<!--通过实体类插入 ：Integer insert(User user);useGeneratedKeys：开启数据库中的自增字段-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="uid">
+        insert into t_user(
+        username,password,salt,phone,email
+        ,gender,avatar,is_delete,created_user
+        ,created_time,modified_user,modified_time)
+        values (
+        #{username},#{password},#{salt},#{phone},#{email},#{gender},#{avatar},#{isDelete}
+        ,#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+    </insert>
+
+<!--通过username查询：    User findByUsername(String username);-->
+    <select id="findByUsername" resultMap="ResultMapUser">
+        select * from t_user where username=#{username}
+    </select>
+
+<!--根据用户uid修改密码    Integer updatePasswordByUid(Integer uid,String password,String modifiedUser,String modifiedTime);-->
+    <update id="updatePasswordByUid">
+        update t_user
+        set password=#{password},
+            modified_user=#{modifiedUser},
+            modified_time=#{modifiedTime}
+        where uid=#{uid}
+    </update>
+
+<!--根据用户uid来查询用户    User findByUid(Integer uid);-->
+    <select id="findByUid" resultMap="ResultMapUser">
+        select * from t_user where uid=#{uid}
+    </select>
+
+<!--更新用户个人资料    Integer updateUserInfoByUid(User user);-->
+    <update id="updateUserInfoByUid">
+        update t_user
+        set
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="email != null">
+                gender=#{gender},
+            </if>
+            modified_user=#{modifiedUser},modified_time=#{modifiedTime}
+            where uid=#{uid}
+    </update>
+
+<!--上传头像     Integer updateAvatarByUid(Integer uid,String avatar, String modifiedUser, Date modifiedTime);-->
+    <update id="updateAvatarByUid">
+        update t_user
+        set
+            avatar=#{avatar},
+            modified_user=#{modifiedUser},
+            modified_time=#{modifiedTime}
+        where uid=#{uid}
+    </update>
+</mapper>
